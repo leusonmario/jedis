@@ -1,7 +1,28 @@
+
+sudo: required
 language: java
+
 jdk:
   - openjdk6
   - openjdk7
   - oraclejdk7
-install: make travis-install
-script: make test
+
+
+script:
+  - mvn clean cobertura:cobertura -Dtest=JedisClusterTest#testClusterCountKeysInSlot -DfailIfNoTests=false
+
+before_deploy:
+- tar -zcvf coverage-result.tar.gz /home/travis/build/leusonmario/jedis/target/site/cobertura
+
+deploy:
+  provider: releases
+  api_key:
+    secure: "MG0o6CrhIsB9XmF4WLBEkyDctliWLSEKz70s3k2t45jSUL1zFuVDALq/iTBbIsCkkeWtrmJF3ZryRc/tqLu99EQsMm9jvB54cRKBQRQ/ei3wnZFTJfuJAxCSnngeL2uTUL/vVR6+NsKt54I05brHl4WjZQFtfJBYdLh8pdXulabVkUTcPtXKestRG0ifQxggmK9PTJODRvk1xFD2o0tOCYvk64/tAg37fnM8iTjOl8rPtjZYjlbbZ+EJx7CD8O9k183nboKaIqzyozGpqoIScvaeMV6O8fdJSxMoyENHymDYW4k+n2hxYfgidgncRoQDP1CwMLg0iT+EwZ7aEfmIa0kuOg99STfUlDE2w31p5jz73xY0WtpRwd7baciEwZX1Go7YG0EBFNs565SAgUvW1z7wGsesED0+Teg7J1lmEjUlymfvUCVycKLuSXn36YGqX4wFj7hQ31xn0du/IwUtNlNhW0ASSFipapsriLFLT4YoIQSOCtw+5WQY8SokdyABnRKj7+6EGden2qgZYPpwAQVRXQm9k46aKZvgm9+j6lIDWFSz/gwIh6j1i64LmjDEbPYEInJv1fj/xITvPGy0ym4md+sDrIixMs+jfZjfBg9fZn82WbsvSXtqWbErB3wwcNtSr7aMvPsR/0DKEkgRjWsVH11pEvu0hi+xTFl1ieM="
+
+
+  file: coverage-result.tar.gz
+  file_glob: true
+  overwrite: true
+  skip_cleanup: true
+  on:
+    tags: true
